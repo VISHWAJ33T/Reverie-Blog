@@ -19,14 +19,15 @@ export const metadata: Metadata = {
 };
 
 interface BookmarksPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const BookmarksPage: React.FC<BookmarksPageProps> = async ({
   searchParams,
 }) => {
+  const resolvedSearchParams = await searchParams;
   let posts: Post[] = [];
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   // Fetch total pages
   const { count } = await supabase
@@ -42,10 +43,10 @@ const BookmarksPage: React.FC<BookmarksPageProps> = async ({
   const limit = 10;
   const totalPages = count ? Math.ceil(count / limit) : 0;
   const page =
-    typeof searchParams.page === "string" &&
-    +searchParams.page > 1 &&
-    +searchParams.page <= totalPages
-      ? +searchParams.page
+    typeof resolvedSearchParams.page === "string" &&
+    +resolvedSearchParams.page > 1 &&
+    +resolvedSearchParams.page <= totalPages
+      ? +resolvedSearchParams.page
       : 1;
   const from = (page - 1) * limit;
   const to = page ? from + limit : limit;

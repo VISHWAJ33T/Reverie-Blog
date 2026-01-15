@@ -7,7 +7,7 @@ import { FC } from "react";
 import { ReadTimeResults } from "reading-time";
 
 async function getPublicImageUrl(postId: string, fileName: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const bucketName =
     process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_POSTS || "posts";

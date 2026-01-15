@@ -9,7 +9,7 @@ import * as z from "zod";
 export async function PostComment(
   context: z.infer<typeof commentSchema>
 ): Promise<ActionResult<boolean>> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   try {
     const comment = commentSchema.parse(context);

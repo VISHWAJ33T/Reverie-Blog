@@ -9,7 +9,7 @@ import * as z from "zod";
 export async function UpdateSettings(
   context: z.infer<typeof profileSchema>
 ): Promise<ActionResult<boolean>> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   try {
     const profile = profileSchema.parse(context);

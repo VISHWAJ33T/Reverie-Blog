@@ -12,16 +12,17 @@ import { notFound } from "next/navigation";
 import React from "react";
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     slug: string[];
-  };
-  searchParams: { [key: string]: string | string[] | undefined };
+  }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
-  const slug = params?.slug?.join("/");
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug?.join("/");
   const category = mainCategoryConfig.find(
     (category) => category.slug === slug,
   );
@@ -76,10 +77,12 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
-  const cookieStore = cookies();
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   // Get category by slug
-  const slug = params?.slug?.join("/");
+  const slug = resolvedParams?.slug?.join("/");
   const category = mainCategoryConfig.find(
     (category) => category.slug === slug,
   );
@@ -93,10 +96,10 @@ export default async function CategoryPage({
   const limit = 10;
   const totalPages = count ? Math.ceil(count / limit) : 0;
   const page =
-    typeof searchParams.page === "string" &&
-    +searchParams.page > 1 &&
-    +searchParams.page <= totalPages
-      ? +searchParams.page
+    typeof resolvedSearchParams.page === "string" &&
+    +resolvedSearchParams.page > 1 &&
+    +resolvedSearchParams.page <= totalPages
+      ? +resolvedSearchParams.page
       : 1;
   const from = (page - 1) * limit;
   const to = page ? from + limit : limit;

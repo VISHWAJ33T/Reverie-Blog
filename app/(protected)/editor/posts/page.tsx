@@ -20,11 +20,12 @@ export const metadata: Metadata = {
 };
 
 interface PostsPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const PostsPage: FC<PostsPageProps> = async ({ searchParams }) => {
-  const cookieStore = cookies();
+  const resolvedSearchParams = await searchParams;
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   // Fetch user data
   const {

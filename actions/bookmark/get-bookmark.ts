@@ -8,7 +8,7 @@ import * as z from "zod";
 export async function GetBookmark(
   context: z.infer<typeof bookmarkSchema>
 ): Promise<boolean> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   try {
     const bookmark = bookmarkSchema.parse(context);

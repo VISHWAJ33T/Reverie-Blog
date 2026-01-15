@@ -9,11 +9,12 @@ import { Suspense } from "react";
 export const revalidate = 0;
 
 interface HomePageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
-  const cookieStore = cookies();
+  const resolvedSearchParams = await searchParams;
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
   // Fetch total pages
@@ -25,10 +26,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const limit = 10;
   const totalPages = count ? Math.ceil(count / limit) : 0;
   const page =
-    typeof searchParams.page === "string" &&
-    +searchParams.page > 1 &&
-    +searchParams.page <= totalPages
-      ? +searchParams.page
+    typeof resolvedSearchParams.page === "string" &&
+    +resolvedSearchParams.page > 1 &&
+    +resolvedSearchParams.page <= totalPages
+      ? +resolvedSearchParams.page
       : 1;
   const from = (page - 1) * limit;
   const to = page ? from + limit : limit;

@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 async function getPost(params: { slug: string[] }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const slug = params?.slug?.join("/");
 
@@ -32,11 +32,12 @@ export default async function MainLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     slug: string[];
-  };
+  }>;
 }) {
-  const post = await getPost(params);
+  const resolvedParams = await params;
+  const post = await getPost(resolvedParams);
 
   if (!post) {
     notFound();

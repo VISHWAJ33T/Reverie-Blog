@@ -9,7 +9,7 @@ import * as z from "zod";
 export async function DeleteGalleryImage(
   context: z.infer<typeof imageDeleteSchema>,
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   try {
     const { userId, postId, fileName } = imageDeleteSchema.parse(context);

@@ -9,7 +9,7 @@ import * as z from "zod";
 export async function DeletePost(
   context: z.infer<typeof postDeleteSchema>
 ): Promise<ActionResult<boolean>> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   try {
     const post = postDeleteSchema.parse(context);

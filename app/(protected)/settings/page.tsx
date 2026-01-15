@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 export const revalidate = 0;
 
 async function getUserId() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const {
     data: { user },
@@ -24,7 +24,7 @@ async function getUserId() {
 }
 
 const SettingsPage = async () => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
   const userId = await getUserId();

@@ -22,9 +22,9 @@ import readingTime, { ReadTimeResults } from "reading-time";
 export const revalidate = 0;
 
 interface PostPageProps {
-  params: {
+  params: Promise<{
     slug: string[];
-  };
+  }>;
 }
 
 async function getBookmark(postId: string, userId: string) {
@@ -41,7 +41,7 @@ async function getBookmark(postId: string, userId: string) {
 
 async function getPost(params: { slug: string[] }) {
   const slug = params?.slug?.join("/");
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
   const response = await supabase
@@ -60,7 +60,8 @@ async function getPost(params: { slug: string[] }) {
 export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
-  const post = await getPost(params);
+  const resolvedParams = await params;
+  const post = await getPost(resolvedParams);
   const truncateDescription =
     post?.description?.slice(0, 100) + ("..." as string);
   const slug = "/posts/" + post?.slug;
@@ -112,7 +113,7 @@ export async function generateMetadata({
 }
 
 async function getComments(postId: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { data: comments, error } = await supabase
     .from("comments")
@@ -128,15 +129,16 @@ async function getComments(postId: string) {
 }
 
 export default async function PostPage({ params }: PostPageProps) {
-  const cookieStore = cookies();
+  const resolvedParams = await params;
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   // Get post data
-  const post = await getPost(params);
+  const post = await getPost(resolvedParams);
   if (!post) {
     notFound();
   }
   // Set post views
-  const slug = params?.slug?.join("/");
+  const slug = resolvedParams?.slug?.join("/");
 
   // Check user logged in or not
   let username = null;

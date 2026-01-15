@@ -5,7 +5,7 @@ const FORM_ID = process.env.CONVERTKIT_FORM_ID;
 const API_KEY = process.env.CONVERTKIT_API_KEY;
 const API_URL = process.env.CONVERTKIT_API_URL;
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
     try {
         // Get the request body and validate it.
         const json = await req.json();

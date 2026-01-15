@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import FileUploadModal from "@/components/ui/file-upload-modal";
 import {
   Form,
   FormControl,
@@ -36,11 +37,6 @@ import { postEditFormSchema } from "@/lib/validation/post";
 import { Draft } from "@/types/collection";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Uppy from "@uppy/core";
-import "@uppy/core/dist/style.min.css";
-import "@uppy/dashboard/dist/style.min.css";
-import { DashboardModal } from "@uppy/react";
-import Tus from "@uppy/tus";
 import { SparklesIcon, Loader2 as SpinnerIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FC, useState } from "react";
@@ -95,106 +91,30 @@ const Editor: FC<EditorProps> = ({
 
   const [content, setContent] = useState<string | null>(post?.content || null);
 
-  // Setup Uppy with Supabase
-  const bucketNamePosts =
-    process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_POSTS || "posts";
+  // Supabase Storage bucket names
   const bucketNameCoverImage =
     process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_COVER_IMAGE ||
     "cover-image";
   const bucketNameGalleryImage =
     process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_GALLERY_IMAGE ||
     "gallery-image";
-  const token = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const projectId = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID;
-  const supabaseUploadURL = `https://${projectId}.supabase.co/storage/v1/upload/resumable`;
 
-  // Uppy instance for cover photo upload
+  // Handle cover image upload complete
+  const handleCoverUploadComplete = () => {
+    toast.success(protectedEditorConfig.successMessageImageUpload);
+    router.refresh();
+  };
 
-  var uppyCover = new Uppy({
-    id: "cover-image",
-    autoProceed: false,
-    debug: false,
-    allowMultipleUploadBatches: true,
-    restrictions: {
-      maxFileSize: 6000000,
-      maxNumberOfFiles: 1,
-    },
-  }).use(Tus, {
-    endpoint: supabaseUploadURL,
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-    chunkSize: 6 * 1024 * 1024,
-    allowedMetaFields: [
-      "bucketName",
-      "objectName",
-      "contentType",
-      "cacheControl",
-    ],
-  });
+  // Handle gallery image upload complete
+  const handleGalleryUploadComplete = () => {
+    toast.success(protectedEditorConfig.successMessageImageUpload);
+    router.refresh();
+  };
 
-  uppyCover.on("file-added", (file) => {
-    file.meta = {
-      ...file.meta,
-      bucketName: bucketNameCoverImage,
-      objectName: `${userId}/${post.id}/${file.name}`,
-      contentType: file.type,
-    };
-  });
-
-  uppyCover.on("complete", async (result) => {
-    if (result.successful.length > 0) {
-      toast.success(protectedEditorConfig.successMessageImageUpload);
-      router.refresh();
-    } else {
-      toast.error(protectedEditorConfig.errorMessageImageUpload);
-    }
-    setShowCoverModal(false);
-  });
-
-  // Uppy instance for gallery uploads
-  var uppyGallery = new Uppy({
-    id: "gallery-image",
-    autoProceed: false,
-    debug: false,
-    allowMultipleUploadBatches: true,
-    restrictions: {
-      maxFileSize: 6000000,
-      maxNumberOfFiles: allowedNumberOfImages,
-    },
-  }).use(Tus, {
-    endpoint: supabaseUploadURL,
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-    chunkSize: 6 * 1024 * 1024,
-    allowedMetaFields: [
-      "bucketName",
-      "objectName",
-      "contentType",
-      "cacheControl",
-    ],
-  });
-
-  uppyGallery.on("file-added", (file) => {
-    file.meta = {
-      ...file.meta,
-      bucketName: bucketNameGalleryImage,
-      objectName: `${userId}/${post.id}/${file.name}`,
-      contentType: file.type,
-    };
-  });
-
-  uppyGallery.on("complete", async (result) => {
-    if (result.successful.length > 0) {
-      // Auto save post
-      toast.success(protectedEditorConfig.successMessageImageUpload);
-      router.refresh();
-    } else {
-      toast.error(protectedEditorConfig.errorMessageImageUpload);
-    }
-    setShowGalleryModal(false);
-  });
+  // Handle upload error
+  const handleUploadError = (error: string) => {
+    toast.error(error || protectedEditorConfig.errorMessageImageUpload);
+  };
 
   // Default values for the form
   const defaultValues: Partial<EditorFormValues> = {
@@ -377,16 +297,17 @@ const Editor: FC<EditorProps> = ({
               />
 
               <div className="flex w-full flex-col">
-                <DashboardModal
-                  uppy={uppyCover}
+                <FileUploadModal
                   open={showCoverModal}
-                  onRequestClose={() => setShowCoverModal(false)}
-                  disablePageScrollWhenModalOpen={false}
-                  showSelectedFiles
-                  showRemoveButtonAfterComplete
-                  note={protectedEditorConfig.formImageNote}
-                  proudlyDisplayPoweredByUppy={false}
-                  showLinkToFileUploadResult
+                  onOpenChange={setShowCoverModal}
+                  bucketName={bucketNameCoverImage}
+                  path={`${userId}/${post.id}`}
+                  maxFiles={1}
+                  maxSize={6 * 1024 * 1024}
+                  onUploadComplete={handleCoverUploadComplete}
+                  onUploadError={handleUploadError}
+                  title="Upload Cover Image"
+                  description={protectedEditorConfig.formImageNote}
                 />
                 {coverImageFileName === "" && (
                   <div className="col-span-full">
@@ -432,16 +353,17 @@ const Editor: FC<EditorProps> = ({
             <Separator className="mb-8" />
             <CardContent className="space-y-4">
               <div className="flex w-full flex-col">
-                <DashboardModal
-                  uppy={uppyGallery}
+                <FileUploadModal
                   open={showGalleryModal}
-                  onRequestClose={() => setShowGalleryModal(false)}
-                  disablePageScrollWhenModalOpen={false}
-                  showSelectedFiles
-                  showRemoveButtonAfterComplete
-                  note={protectedEditorConfig.formImageNote}
-                  proudlyDisplayPoweredByUppy={false}
-                  showLinkToFileUploadResult
+                  onOpenChange={setShowGalleryModal}
+                  bucketName={bucketNameGalleryImage}
+                  path={`${userId}/${post.id}`}
+                  maxFiles={allowedNumberOfImages}
+                  maxSize={6 * 1024 * 1024}
+                  onUploadComplete={handleGalleryUploadComplete}
+                  onUploadError={handleUploadError}
+                  title="Upload Gallery Images"
+                  description={protectedEditorConfig.formImageNote}
                 />
                 <div className="col-span-full">
                   <div className="mb-3 flex items-center gap-x-3">

@@ -10,7 +10,7 @@ import * as z from "zod";
 export async function CreatePost(
   context: z.infer<typeof postCreateSchema>
 ): Promise<ActionResult<Draft>> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   try {
     const post = postCreateSchema.parse(context);

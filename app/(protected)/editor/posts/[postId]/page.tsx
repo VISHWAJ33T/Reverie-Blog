@@ -9,11 +9,11 @@ import { notFound } from "next/navigation";
 export const revalidate = 0;
 
 interface PostEditorPageProps {
-  params: { postId: string };
+  params: Promise<{ postId: string }>;
 }
 
 async function getUserId() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const {
     data: { user },
@@ -30,7 +30,7 @@ async function getUserId() {
 }
 
 async function getPost(postId: string, userId: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { data, error } = await supabase
     .from("drafts")
@@ -53,7 +53,7 @@ async function getCoverImageFileName(
   userId: string,
   postId: string,
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { data, error } = await supabase.storage
     .from(bucketName)
@@ -81,7 +81,7 @@ async function getCoverImageUrl(
   postId: string,
   fileName: string,
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { data } = supabase.storage
     .from(bucketName)
@@ -92,7 +92,7 @@ async function getCoverImageUrl(
 
 // Get Gallery images filenames and public urls
 async function getGalleryImageFileNames(bucketName: string, userId: string | null, postId: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { data, error } = await supabase.storage
     .from(bucketName)
@@ -121,7 +121,7 @@ async function getGalleryImageUrls(
   postId: string,
   fileNames: string[],
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   let filePublicUrls: string[] = [];
   fileNames.map((fileName) => {
@@ -136,23 +136,24 @@ async function getGalleryImageUrls(
 }
 
 export default async function PostEditorPage({ params }: PostEditorPageProps) {
+  const resolvedParams = await params;
   const bucketNameCoverImage =
     process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_COVER_IMAGE!;
   const bucketNameGalleryImage =
     process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET_GALLERY_IMAGE!;
   const userId = await getUserId();
-  const post = await getPost(params.postId, userId || "");
+  const post = await getPost(resolvedParams.postId, userId || "");
 
   // Cover image setup
   const coverImageFileName = await getCoverImageFileName(
     bucketNameCoverImage,
     userId || "",
-    params.postId,
+    resolvedParams.postId,
   );
   const coverImagePublicUrl = await getCoverImageUrl(
     bucketNameCoverImage,
     userId || "",
-    params.postId,
+    resolvedParams.postId,
     coverImageFileName || "",
   );
 
@@ -160,12 +161,12 @@ export default async function PostEditorPage({ params }: PostEditorPageProps) {
   const galleryImageFileNames = await getGalleryImageFileNames(
     bucketNameGalleryImage,
     userId,
-    params.postId,
+    resolvedParams.postId,
   );
   const galleryImagePublicUrls = await getGalleryImageUrls(
     bucketNameGalleryImage,
     userId || "",
-    params.postId,
+    resolvedParams.postId,
     galleryImageFileNames || [],
   );
 
