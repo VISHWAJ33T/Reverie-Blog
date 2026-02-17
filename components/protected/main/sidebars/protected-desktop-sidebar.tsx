@@ -17,8 +17,8 @@ const ProtectedDesktopSideBar = () => {
           <Link href={getUrl()} className="flex h-16 shrink-0 items-center">
             <Image
               className="h-[40px]w-[40px]w-auto"
-              src="/images/logo.png"
-              alt="Logo"
+              src="/logo.png"
+              alt="Reverie Logo"
               height={40}
               width={40}
               priority
