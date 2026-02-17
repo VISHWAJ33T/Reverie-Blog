@@ -1,20 +1,20 @@
 import { SeoType } from "types";
 
 export const seoData: SeoType = {
-  title: "Multi-user, full-stack blogging application",
+  title: "Reverie - Blogging Platform",
   subTitle:
-    "Multi-user, full-stack blogging app built with Next.js and Supabase",
-  absoluteTitle: "Next.js | Blog app",
-  ogTitle: "Next.js | Supabase | Blog app",
+    "A modern multi-user blogging platform built with Next.js and Supabase",
+  absoluteTitle: "Reverie | Blogging Platform",
+  ogTitle: "Reverie | Blogging Platform",
   author: {
-    name: "Tim",
-    twitterUrl: "https://twitter.com/timtbdev",
-    twitterAddress: "@timtbdev",
+    name: "Reverie",
+    twitterUrl: "",
+    twitterAddress: "",
   },
   description:
-    "Multi-user, Fullstack, Blogging, applicaiton, blog, app, Next.js, Supabase, Supabase Database, Supabase Auth, Supabase Storage, TailwindCSS, TypeScript, Shadcn-ui, Radix-ui, HeadlessUi, NodeMailer, ConvertKit, Vercel OG, React-Hook-Form, React-Drop-Zone, Zod, HeroIcons, Lucide, Novel, Vaul, Uppy",
+    "Reverie is a modern, multi-user blogging platform built with Next.js and Supabase. Create, publish, and manage beautiful blog posts with ease.",
   keywords: [
-    "Multi-user, Fullstack, Blogging, applicaiton, blog, app, Next.js, Supabase, Supabase Database, Supabase Auth, Supabase Storage, TailwindCSS, TypeScript, Shadcn-ui, Radix-ui, HeadlessUi, NodeMailer, ConvertKit, Vercel OG, React-Hook-Form, React-Drop-Zone, Zod, HeroIcons, Lucide, Novel, Vaul, Uppy",
+    "Reverie, Blogging, Blog Platform, Next.js, Supabase, Multi-user Blog, Content Management, Writing Platform, Blogging App",
   ],
-  tags: ["Next.js", "Supabase", "TailwindCSS"],
+  tags: ["Reverie", "Blogging", "Next.js", "Supabase"],
 };

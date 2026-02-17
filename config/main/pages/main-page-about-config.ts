@@ -9,9 +9,9 @@ import {
 const mainPageAboutConfig: AboutPageType = {
   general: {
     title: "About",
-    subTitle: "Fullstack Blogging application",
+    subTitle: "Reverie - Blogging Platform",
     description:
-      "This is a fullstack blogging application built with Next.js 13 and Supabase.",
+      "Reverie is a modern, multi-user blogging platform designed for writers and creators who want to share their thoughts and stories with the world.",
     paragraphs: [
       {
         description:

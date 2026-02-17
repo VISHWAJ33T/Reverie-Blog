@@ -83,8 +83,8 @@ const ProtectedMobileSideBar: FC<ProtectedMobileSideBarProps> = ({
                   >
                     <Image
                       className="h-[40px] w-[40px]"
-                      src="/images/logo.png"
-                      alt="Logo"
+                      src="/logo.png"
+                      alt="Reverie Logo"
                       height={40}
                       width={40}
                       priority
