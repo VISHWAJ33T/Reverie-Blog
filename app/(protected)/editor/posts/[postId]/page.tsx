@@ -52,10 +52,10 @@ async function getPublishedPostDate(postId: string) {
   const supabase = createClient(cookieStore);
   const { data } = await supabase
     .from("posts")
-    .select("created_at")
+    .select("published_at")
     .eq("id", postId)
     .single();
-  return data?.created_at ?? null;
+  return data?.published_at ?? null;
 }
 
 async function getCategories() {
