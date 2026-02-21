@@ -278,6 +278,7 @@ export interface Database {
           full_name: string | null
           id: string
           is_admin: boolean
+          email: string | null
           updated_at: string | null
           username: string | null
           website: string | null
@@ -287,6 +288,7 @@ export interface Database {
           full_name?: string | null
           id: string
           is_admin?: boolean
+          email?: string | null
           updated_at?: string | null
           username?: string | null
           website?: string | null
@@ -296,6 +298,7 @@ export interface Database {
           full_name?: string | null
           id?: string
           is_admin?: boolean
+          email?: string | null
           updated_at?: string | null
           username?: string | null
           website?: string | null
@@ -316,6 +319,7 @@ export interface Database {
           sub_title: string
           description: string
           features: Json
+          content: string | null
           updated_at: string | null
         }
         Insert: {
@@ -324,6 +328,7 @@ export interface Database {
           sub_title?: string
           description?: string
           features?: Json
+          content?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -332,6 +337,7 @@ export interface Database {
           sub_title?: string
           description?: string
           features?: Json
+          content?: string | null
           updated_at?: string | null
         }
         Relationships: []
