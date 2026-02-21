@@ -227,6 +227,7 @@ export interface Database {
           id: string
           image: string | null
           published: boolean | null
+          published_at: string | null
           slug: string | null
           title: string | null
           updated_at: string | null
@@ -240,6 +241,7 @@ export interface Database {
           id?: string
           image?: string | null
           published?: boolean | null
+          published_at?: string | null
           slug?: string | null
           title?: string | null
           updated_at?: string | null
@@ -253,6 +255,7 @@ export interface Database {
           id?: string
           image?: string | null
           published?: boolean | null
+          published_at?: string | null
           slug?: string | null
           title?: string | null
           updated_at?: string | null
@@ -281,7 +284,6 @@ export interface Database {
           email: string | null
           updated_at: string | null
           username: string | null
-          website: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -291,7 +293,6 @@ export interface Database {
           email?: string | null
           updated_at?: string | null
           username?: string | null
-          website?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -301,7 +302,6 @@ export interface Database {
           email?: string | null
           updated_at?: string | null
           username?: string | null
-          website?: string | null
         }
         Relationships: [
           {
