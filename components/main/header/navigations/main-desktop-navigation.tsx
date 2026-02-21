@@ -12,25 +12,25 @@ interface MainDesktopNavigationProps {
 const MainDesktopNavigation = ({ navCategories }: MainDesktopNavigationProps) => {
   return (
     <>
-      <nav className="mx-auto hidden max-w-5xl items-center justify-between px-2 py-2 md:flex">
-        {/* Logo: black container, white icon, 3:2 aspect ratio */}
-        <div className="flex flex-1 justify-start">
-          <Link href="/" className="flex shrink-0 items-center">
-            <div className="flex h-14 shrink-0 items-center justify-center overflow-hidden rounded-md bg-black aspect-3/2">
-              <LogoIcon className="h-12 max-h-12" />
+      <nav className="relative hidden h-20 w-full items-center justify-between overflow-hidden py-0 md:flex">
+        {/* Logo: ~10% from left edge, responsive with vw */}
+        <div className="flex shrink-0 pl-[5vw] md:pl-[6vw] lg:pl-[7vw]">
+          <Link href="/" className="flex items-center">
+            <div className="flex shrink-0 items-center justify-center overflow-hidden rounded-md bg-black">
+              <LogoIcon className="h-24 w-64 md:w-72" />
             </div>
           </Link>
         </div>
 
-        {/* Navigation */}
-        <div>
-          <div className="flex flex-1 gap-x-6 py-2">
+        {/* Navigation: centered / flexible */}
+        <div className="absolute left-1/2 top-0 flex h-full -translate-x-1/2 items-center">
+          <div className="flex gap-x-6 py-2">
             <MainDesktopNavigationMenu navCategories={navCategories} />
           </div>
         </div>
 
         {/* Login / profile */}
-        <div className="flex flex-1 justify-end">
+        <div className="flex shrink-0 pr-[4vw] md:pr-[6vw] lg:pr-[8vw]">
           <LoginMenu />
         </div>
       </nav>
