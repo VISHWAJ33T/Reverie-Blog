@@ -18,17 +18,13 @@ export const profileFormSchema = z.object({
       message: "Lastname must not be longer than 30 characters.",
     }),
   userName: z.string().optional(),
-  email: z.string().email().optional(),
   avatarUrl: z.string().url().optional(),
-  website: z.string().optional(),
 });
 
 export const profileSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  email: z.string().email().optional(),
   userName: z.string().optional(),
   avatarUrl: z.string().url().optional(),
-  website: z.string().optional(),
 });
