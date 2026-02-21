@@ -3,6 +3,7 @@
 import { PublishDraft } from "@/actions/post/publish-draft";
 import { UnpublishPost } from "@/actions/post/unpublish-post";
 import { UpdatePost } from "@/actions/post/update-post";
+import { UpdatePostPublishDate } from "@/actions/post/update-post-publish-date";
 import WysiwygEditor from "@/components/protected/editor/wysiwyg/wysiwyg-editor";
 import {
   AlertDialog,
@@ -66,9 +67,20 @@ interface EditorProps {
   coverImagePublicUrl: string;
   galleryImageFileNames: string[];
   galleryImagePublicUrls: string[];
+  isAdmin?: boolean;
+  postId?: string | null;
+  postPublishedAt?: string | null;
 }
 
 type EditorFormValues = z.infer<typeof postEditFormSchema>;
+
+function toDatetimeLocal(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 const Editor: FC<EditorProps> = ({
   post,
@@ -78,6 +90,9 @@ const Editor: FC<EditorProps> = ({
   coverImagePublicUrl,
   galleryImageFileNames,
   galleryImagePublicUrls,
+  isAdmin = false,
+  postId = null,
+  postPublishedAt = null,
 }) => {
   const router = useRouter();
 
@@ -88,6 +103,10 @@ const Editor: FC<EditorProps> = ({
   const [showLoadingAlert, setShowLoadingAlert] = useState<boolean>(false);
   const [showCoverModal, setShowCoverModal] = useState<boolean>(false);
   const [showGalleryModal, setShowGalleryModal] = useState<boolean>(false);
+  const [publishDateValue, setPublishDateValue] = useState<string>(() =>
+    toDatetimeLocal(postPublishedAt)
+  );
+  const [publishDateSaving, setPublishDateSaving] = useState(false);
 
   // Editor
   const [saveStatus, setSaveStatus] = useState("Saved");
@@ -150,6 +169,10 @@ const Editor: FC<EditorProps> = ({
       form.setValue("image", coverImageFileName);
     }
   }, [coverImageFileName, form]);
+
+  useEffect(() => {
+    setPublishDateValue(toDatetimeLocal(postPublishedAt));
+  }, [postPublishedAt]);
 
   async function onSubmit(data: EditorFormValues) {
     setShowLoadingAlert(true);
@@ -225,6 +248,19 @@ const Editor: FC<EditorProps> = ({
       );
     }
     setShowLoadingAlert(false);
+  }
+
+  async function handlePublishDateBlur() {
+    if (!postId || !isAdmin || publishDateSaving) return;
+    setPublishDateSaving(true);
+    const result = await UpdatePostPublishDate(postId, publishDateValue);
+    setPublishDateSaving(false);
+    if (result.success) {
+      toast.success("Publish date updated");
+      router.refresh();
+    } else {
+      toast.error(result.error ?? "Failed to update publish date");
+    }
   }
 
   return (
@@ -334,6 +370,34 @@ const Editor: FC<EditorProps> = ({
               />
             </CardContent>
           </Card>
+
+          {/* Publish date (admin only, published posts only) */}
+          {isAdmin && postId && postPublishedAt != null && (
+            <Card className="max-w-2xl">
+              <CardHeader>
+                <CardTitle>Publish date</CardTitle>
+                <CardDescription>
+                  Change the date shown as the post&apos;s publish date. Only admins can edit this.
+                </CardDescription>
+              </CardHeader>
+              <Separator className="mb-8" />
+              <CardContent className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="datetime-local"
+                    value={publishDateValue}
+                    onChange={(e) => setPublishDateValue(e.target.value)}
+                    onBlur={handlePublishDateBlur}
+                    disabled={publishDateSaving}
+                    className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                  {publishDateSaving && (
+                    <SpinnerIcon className="h-5 w-5 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Cover Image */}
           <Card className="max-w-2xl">
