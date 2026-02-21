@@ -19,7 +19,6 @@ export async function UpdateSettings(
         full_name: `${profile.firstName} ${profile.lastName}`,
         username: profile.userName,
         avatar_url: profile.avatarUrl,
-        website: profile.website,
         updated_at: new Date().toISOString(),
       })
       .eq("id", profile.id);
