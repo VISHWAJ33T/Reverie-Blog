@@ -213,6 +213,19 @@ const ProtectedSettingsProfile: FC<ProtectedSettingsProfileProps> = ({
                   </FormItem>
                 )}
               />
+              <div className="space-y-2">
+                <FormLabel>Email</FormLabel>
+                <Input
+                  value={user.email ?? ""}
+                  readOnly
+                  disabled
+                  className="max-w-md bg-muted text-muted-foreground"
+                  aria-label="Email (read-only)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Email cannot be changed here.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
